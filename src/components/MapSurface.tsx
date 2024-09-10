@@ -281,6 +281,8 @@ function determineFitViewport(elements: MapElement[], viewport: MapViewport): { 
     };
 }
 
+type CoordinatesType = (Parameters<typeof booleanPointInPolygon>[1] & { type: 'Polygon' })['coordinates'][number][number];
+
 function isPointInElement(point: Point, element: MapElement, viewport: MapViewport): boolean {
     switch (element.elementType) {
         case 'point':
@@ -295,11 +297,18 @@ function isPointInElement(point: Point, element: MapElement, viewport: MapViewpo
 
         case 'region':
             if (element.region.isPolygon) {
+                const coordinates = element.region.points.map(({ x, y }) => [x, y] as CoordinatesType);
+
+                // if the first point and the last point are not the same, close the polygon
+                if (coordinates[0][0] !== coordinates[coordinates.length - 1][0] || coordinates[0][1] !== coordinates[coordinates.length - 1][1]) {
+                    coordinates.push(coordinates[0]);
+                }
+
                 return booleanPointInPolygon(
                     [point.x, point.y],
                     {
                         type: 'Polygon',
-                        coordinates: [element.region.points.map(({ x, y }) => [x, y])]
+                        coordinates: [coordinates]
                     }
                 );
             } else {
