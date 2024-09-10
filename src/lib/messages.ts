@@ -82,6 +82,14 @@ export const SubscriptionNewMessageSchema = z.object({
 
 export type SubscriptionNewMessage = z.infer<typeof SubscriptionNewMessageSchema>;
 
+export const SubscriptionUpdateMessageSchema = z.object({
+    id: z.number(),
+    time: z.coerce.date(),
+    sub: SubscriptionSchema,
+});
+
+export type SubscriptionUpdateMessage = z.infer<typeof SubscriptionUpdateMessageSchema>;
+
 export const ClientLeaveMessageSchema = z.object({
     id: z.number(),
     time: z.coerce.date(),
@@ -122,8 +130,8 @@ export const DisseminationMessageSchema = z.object({
 
 export type DisseminationMessage = z.infer<typeof DisseminationMessageSchema>;
 
-export type Message = InfoMessage | SubscriptionDeleteMessage | SubscriptionNewMessage | ClientLeaveMessage | ClientJoinMessage | ClientMoveMessage | PubMessage | DisseminationMessage;
+export type Message = InfoMessage | SubscriptionDeleteMessage | SubscriptionNewMessage | ClientLeaveMessage | ClientJoinMessage | ClientMoveMessage | PubMessage | DisseminationMessage | SubscriptionUpdateMessage;
 
 export type TypedMessage = {
-    type: 'info' | 'sub-delete' | 'sub-new' | 'client-leave' | 'client-join' | 'client-move' | 'pub' | 'dissemination'
+    type: 'info' | 'sub-delete' | 'sub-new' | 'client-leave' | 'client-join' | 'client-move' | 'pub' | 'dissemination' | 'sub-update';
 } & Message;

@@ -16,6 +16,8 @@ import {
     SubscriptionDeleteMessageSchema,
     SubscriptionNewMessage,
     SubscriptionNewMessageSchema,
+    SubscriptionUpdateMessage,
+    SubscriptionUpdateMessageSchema,
     TypedMessage
 } from "./messages";
 
@@ -56,6 +58,7 @@ type Action =
     | { type: 'ADD_CLIENT'; payload: ClientJoinMessage }
     | { type: 'MOVE_CLIENT'; payload: ClientJoinMessage }
     | { type: 'ADD_SUBSCRIPTION'; payload: SubscriptionNewMessage }
+    | { type: 'UPDATE_SUBSCRIPTION'; payload: SubscriptionUpdateMessage }
     | { type: 'ADD_PUB_EVENT'; payload: Message }
     | { type: 'ADD_INFO_EVENT'; payload: InfoMessage }
     | { type: 'ADD_SUB_DELETE_EVENT'; payload: SubscriptionDeleteMessage }
@@ -63,6 +66,7 @@ type Action =
     | { type: 'ADD_CLIENT_JOIN_EVENT'; payload: ClientJoinMessage }
     | { type: 'ADD_CLIENT_MOVE_EVENT'; payload: ClientJoinMessage }
     | { type: 'ADD_SUB_NEW_EVENT'; payload: SubscriptionNewMessage } 
+    | { type: 'ADD_SUB_UPDATE_EVENT'; payload: SubscriptionUpdateMessage }
     | { type: 'ADD_DISSEMINATE_EVENT'; payload: Message };
 
 function reducer(state: State, action: Action): State {
@@ -142,6 +146,7 @@ function reducer(state: State, action: Action): State {
                 },
             };
 
+        case 'UPDATE_SUBSCRIPTION':
         case 'ADD_SUBSCRIPTION':
             return {
                 ...state,
@@ -192,6 +197,11 @@ function reducer(state: State, action: Action): State {
             return {
                 ...state,
                 events: [{ ...action.payload, type: 'sub-new' } as TypedMessage, ...state.events],
+            };
+        case 'ADD_SUB_UPDATE_EVENT':
+            return {
+                ...state,
+                events: [{ ...action.payload, type: 'sub-update' } as TypedMessage, ...state.events],
             };
         case 'ADD_DISSEMINATE_EVENT':
             return {
@@ -268,6 +278,11 @@ export default function Inspector({ children }: { children: React.ReactNode }) {
                         const subNewMessage = SubscriptionNewMessageSchema.parse(data);
                         dispatch({ type: 'ADD_SUBSCRIPTION', payload: subNewMessage });
                         dispatch({ type: 'ADD_SUB_NEW_EVENT', payload: subNewMessage });
+                        break;
+                    case 6: // SUB_UPDATE
+                        const subUpdateMessage = SubscriptionUpdateMessageSchema.parse(data);
+                        dispatch({ type: 'UPDATE_SUBSCRIPTION', payload: subUpdateMessage });
+                        dispatch({ type: 'ADD_SUB_UPDATE_EVENT', payload: subUpdateMessage });
                         break;
                     case 8: // PUB
                         const pubMessage = PubMessageSchema.parse(data);
