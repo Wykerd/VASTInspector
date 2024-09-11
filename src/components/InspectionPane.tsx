@@ -27,7 +27,11 @@ export default function InspectionPane() {
                     Channel: {inspectionPane.currentPublicationInspection.pub.channel}
                 </span>
                 <span className="mb-1">
-                    Region: {inspectionPane.currentPublicationInspection.pub.aoi.isPolygon ? "Polygon" : "Circle"}. Shown on map.
+                    Region: {
+                        inspectionPane.currentPublicationInspection.pub.aoi.isPolygon === true ?
+                            `Poly(vertices = ${inspectionPane.currentPublicationInspection.pub.aoi.points.length})` :
+                            `Circular(x = ${inspectionPane.currentPublicationInspection.pub.aoi.center.x}, y = ${inspectionPane.currentPublicationInspection.pub.aoi.center.y}, radius = ${inspectionPane.currentPublicationInspection.pub.aoi.radius})`
+                    }. Shown on map.
                 </span>
                 <span className="mb-1">
                     Payload
