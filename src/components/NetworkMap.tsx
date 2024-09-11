@@ -42,6 +42,10 @@ export default function NetworkMap() {
 
     const hoverLabels = useMemo(() => {
         const ret = [
+            ...Object.values(inspector.state.subscriptions).map(subscription => (
+                `Subscription '${subscription.id}'`
+            )),
+
             ...Object.values(inspector.state.matchers).map(matcher => (
                 `Matcher #${matcher.id}`
             )),
@@ -49,10 +53,6 @@ export default function NetworkMap() {
             ...Object.values(inspector.state.clients).map(client => (
                 `Client '${client.id}'`
             )),
-    
-            ...Object.values(inspector.state.subscriptions).map(subscription => (
-                `Subscription '${subscription.id}'`
-            ))
         ];
 
         if (inspectionPane.currentPublicationInspection) {
@@ -100,6 +100,16 @@ export default function NetworkMap() {
             onMove={setCenter}
             onElementsHovering={setHoveringElementsIndices}
             elements={[
+                ...Object.values(inspector.state.subscriptions).map(subscription => {
+                    const entry: MapElement = {
+                        elementType: 'region',
+                        region: subscription.aoi,
+                        regionType: 'subscription'
+                    };
+
+                    return entry;
+                }),
+
                 ...Object.values(inspector.state.matchers).map(matcher => {
                     const entry: MapElement = {
                         elementType: 'point',
@@ -115,16 +125,6 @@ export default function NetworkMap() {
                         elementType: 'point',
                         point: client.pos,
                         pointType: 'client'
-                    };
-
-                    return entry;
-                }),
-
-                ...Object.values(inspector.state.subscriptions).map(subscription => {
-                    const entry: MapElement = {
-                        elementType: 'region',
-                        region: subscription.aoi,
-                        regionType: 'subscription'
                     };
 
                     return entry;
