@@ -7,6 +7,7 @@ import NetworkOverview from "./components/NetworkOverview"
 import AddMatcherButton from "./components/AddMatcherButton"
 import EventLog from "./components/EventLog"
 import NetworkMap from "./components/NetworkMap"
+import InspectionPane from "./components/InspectionPane"
 
 export default function App() {
     return (
@@ -15,8 +16,8 @@ export default function App() {
             className="min-h-screen"
         >
             <ResizablePanel defaultSize={25}>
-                <div className="flex flex-col p-6 gap-6">
-                    <div className="flex flex-row justify-between items-center">
+                <div className="flex flex-col gap-6 h-full max-h-screen">
+                    <div className="flex flex-row justify-between items-center p-6 pb-0">
                         <h1 className="font-bold text-xl">
                             VAST Inspector
                         </h1>
@@ -39,9 +40,7 @@ export default function App() {
             </ResizablePanel>
             <ResizableHandle />
             <ResizablePanel defaultSize={25}>
-                <div className="flex h-full items-center justify-center p-6">
-                    <span className="font-semibold">Stats</span>
-                </div>
+                <InspectionPane />
             </ResizablePanel>
         </ResizablePanelGroup>
     )

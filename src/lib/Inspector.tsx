@@ -67,7 +67,8 @@ type Action =
     | { type: 'ADD_CLIENT_MOVE_EVENT'; payload: ClientJoinMessage }
     | { type: 'ADD_SUB_NEW_EVENT'; payload: SubscriptionNewMessage } 
     | { type: 'ADD_SUB_UPDATE_EVENT'; payload: SubscriptionUpdateMessage }
-    | { type: 'ADD_DISSEMINATE_EVENT'; payload: Message };
+    | { type: 'ADD_DISSEMINATE_EVENT'; payload: Message } 
+    | { type: 'CLEAR_EVENTS' };
 
 function reducer(state: State, action: Action): State {
     switch (action.type) {
@@ -209,6 +210,12 @@ function reducer(state: State, action: Action): State {
                 events: [{ ...action.payload, type: 'dissemination' } as TypedMessage, ...state.events],
             };
 
+        case 'CLEAR_EVENTS':
+            return {
+                ...state,
+                events: [],
+            };
+
         default:
             return state;
     }
@@ -219,6 +226,7 @@ interface InspectorContextValue {
     state: State;
     dispatch: React.Dispatch<Action>;
     addMatcher: (inspectorUrl: string) => void;
+    clearEvents: () => void;
 }
 
 const InspectorContext = createContext<InspectorContextValue | null>(null);
@@ -303,6 +311,7 @@ export default function Inspector({ children }: { children: React.ReactNode }) {
         state,
         dispatch,
         addMatcher,
+        clearEvents: () => dispatch({ type: 'CLEAR_EVENTS' }),
     }), [state]);
 
     return (

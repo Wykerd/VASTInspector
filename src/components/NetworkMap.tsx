@@ -4,6 +4,7 @@ import { useMemo, useRef, useState } from "react"
 import { MapController } from "./MapController"
 import { Point } from "@/lib/messages"
 import { useInspector } from "@/lib/Inspector"
+import { useInspectionPane } from "@/lib/InspectionPaneProvider"
 
 function MapViewportIndicator({
     scale,
@@ -37,8 +38,10 @@ export default function NetworkMap() {
     const [withCenterCrosshair, setWithCenterCrosshair] = useState<boolean>(true);
     const [hoveringElementsIndices, setHoveringElementsIndices] = useState<number[]>([]);
 
+    const inspectionPane = useInspectionPane();
+
     const hoverLabels = useMemo(() => {
-        return [
+        const ret = [
             ...Object.values(inspector.state.matchers).map(matcher => (
                 `Matcher #${matcher.id}`
             )),
@@ -50,8 +53,14 @@ export default function NetworkMap() {
             ...Object.values(inspector.state.subscriptions).map(subscription => (
                 `Subscription '${subscription.id}'`
             ))
-        ]
-    }, [inspector.state.matchers, inspector.state.clients, inspector.state.subscriptions]);
+        ];
+
+        if (inspectionPane.currentPublicationInspection) {
+            ret.push(`Publication '${inspectionPane.currentPublicationInspection.pub.pubID}'`);
+        }
+
+        return ret;
+    }, [inspector.state.matchers, inspector.state.clients, inspector.state.subscriptions, inspectionPane.currentPublicationInspection]);
 
     async function handleCreateSnapshot() {
         const canvas = mapControllerRef.current.getCanvas();
@@ -119,7 +128,16 @@ export default function NetworkMap() {
                     };
 
                     return entry;
-                })
+                }),
+
+                ...(inspectionPane.currentPublicationInspection ? [
+                        {
+                            elementType: 'region',
+                            region: inspectionPane.currentPublicationInspection.pub.aoi,
+                            regionType: 'publication'
+                        } satisfies MapElement
+                    ] : []
+                )
             ]}
             ref={mapControllerRef}
             withGrid={withGrid}

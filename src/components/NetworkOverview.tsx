@@ -103,7 +103,7 @@ export default function NetworkOverview() {
             No matchers have been added yet.
         </span>
 
-    return <div>
+    return <div className="p-6 pt-0 grow overflow-auto">
         {
             matchers.map((matcher) => (
                 <MatcherEntry key={matcher.id} matcher={matcher} />
