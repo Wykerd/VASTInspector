@@ -1,6 +1,6 @@
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import { Antenna, CirclePlus, Compass, Locate, LocateFixed, LocateOff, LucideIcon, Radio, Unplug, X } from "lucide-react"
+import { Antenna, CirclePlus, Compass, FileJson2, Locate, LocateFixed, LocateOff, LucideIcon, Radio, Unplug, X } from "lucide-react"
 import { useMemo, useRef, useState } from "react"
 import { Button } from "./ui/button"
 import { useInspector } from "@/lib/Inspector"
@@ -143,6 +143,15 @@ export default function EventLog() {
         overscan: 10,
     });
 
+    function handleExportJSON() {
+        const blob = new Blob([JSON.stringify(filteredEvents, null, 2)], { type: 'application/json' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `events-${Date.now()}.json`;
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+    }
+
     return (
         <div className="flex flex-col h-full">
             <div className="py-2 bg-white border-b border-border mx-4 flex flex-row gap-2 items-center justify-between">
@@ -163,6 +172,10 @@ export default function EventLog() {
                             new Intl.NumberFormat('en-US').format(filteredEvents.length)
                         } {filteredEvents.length === 1 ? 'event' : 'events'}
                     </span>
+                    <Button onClick={handleExportJSON} variant="secondary" size="xxs">
+                        <FileJson2 size={16} />
+                        Export
+                    </Button>
                     <Button onClick={() => inspector.clearEvents()} variant="secondary" size="xxs">
                         <X size={16} />
                         Clear
