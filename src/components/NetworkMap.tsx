@@ -62,12 +62,62 @@ export default function NetworkMap() {
         return ret;
     }, [inspector.state.matchers, inspector.state.clients, inspector.state.subscriptions, inspectionPane.currentPublicationInspection]);
 
-    async function handleCreateSnapshot() {
+    function handleCreateSnapshot() {
         const canvas = mapControllerRef.current.getCanvas();
         const link = document.createElement('a');
         link.href = canvas.toDataURL('image/png');
         link.download = `NetworkMap-${Date.now()}.png`;
         link.click();
+    }
+
+    const mapElements: MapElement[] = [
+        ...Object.values(inspector.state.subscriptions).map(subscription => {
+            const entry: MapElement = {
+                elementType: 'region',
+                region: subscription.aoi,
+                regionType: 'subscription'
+            };
+
+            return entry;
+        }),
+
+        ...Object.values(inspector.state.matchers).map(matcher => {
+            const entry: MapElement = {
+                elementType: 'point',
+                point: matcher.pos,
+                pointType: 'matcher'
+            };
+
+            return entry;
+        }),
+
+        ...Object.values(inspector.state.clients).map(client => {
+            const entry: MapElement = {
+                elementType: 'point',
+                point: client.pos,
+                pointType: 'client'
+            };
+
+            return entry;
+        }),
+
+        ...(inspectionPane.currentPublicationInspection ? [
+                {
+                    elementType: 'region',
+                    region: inspectionPane.currentPublicationInspection.pub.aoi,
+                    regionType: 'publication'
+                } satisfies MapElement
+            ] : []
+        )
+    ];
+
+    function handleExportElements() {
+        const blob = new Blob([JSON.stringify(mapElements)], { type: 'application/json' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `NetworkMapElements-${Date.now()}.json`;
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(link.href), 1000);
     }
 
     return <div className="flex h-full items-center justify-center relative">
@@ -81,6 +131,7 @@ export default function NetworkMap() {
                 setScale(idealVP.scale);
             }}
             onSnapshot={handleCreateSnapshot}
+            onExportElements={handleExportElements}
 
             gridInterval={withGrid}
             onGridIntervalChange={setWithGrid}
@@ -99,46 +150,7 @@ export default function NetworkMap() {
             onInteractionEnd={() => setLogicalCoordinates(center)}
             onMove={setCenter}
             onElementsHovering={setHoveringElementsIndices}
-            elements={[
-                ...Object.values(inspector.state.subscriptions).map(subscription => {
-                    const entry: MapElement = {
-                        elementType: 'region',
-                        region: subscription.aoi,
-                        regionType: 'subscription'
-                    };
-
-                    return entry;
-                }),
-
-                ...Object.values(inspector.state.matchers).map(matcher => {
-                    const entry: MapElement = {
-                        elementType: 'point',
-                        point: matcher.pos,
-                        pointType: 'matcher'
-                    };
-
-                    return entry;
-                }),
-
-                ...Object.values(inspector.state.clients).map(client => {
-                    const entry: MapElement = {
-                        elementType: 'point',
-                        point: client.pos,
-                        pointType: 'client'
-                    };
-
-                    return entry;
-                }),
-
-                ...(inspectionPane.currentPublicationInspection ? [
-                        {
-                            elementType: 'region',
-                            region: inspectionPane.currentPublicationInspection.pub.aoi,
-                            regionType: 'publication'
-                        } satisfies MapElement
-                    ] : []
-                )
-            ]}
+            elements={mapElements}
             ref={mapControllerRef}
             withGrid={withGrid}
             withCenterCrosshair={withCenterCrosshair}

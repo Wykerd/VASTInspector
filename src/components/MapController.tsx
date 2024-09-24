@@ -3,7 +3,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
 import { Label } from "./ui/label"
 import { Input } from "./ui/input"
 import { Switch } from "./ui/switch"
-import { PlusIcon, MinusIcon, MaximizeIcon, ImageDownIcon, SettingsIcon } from "lucide-react"
+import { PlusIcon, MinusIcon, MaximizeIcon, ImageDownIcon, SettingsIcon, CombineIcon } from "lucide-react"
 
 function MapControlButton({
     icon, onClick, label
@@ -25,7 +25,7 @@ function MapControlButton({
 }
 
 export function MapController({
-    onZoomIn, onZoomOut, onFit, onSnapshot,
+    onZoomIn, onZoomOut, onFit, onSnapshot, onExportElements,
     gridInterval, onGridIntervalChange,
     withCenterCrosshair, onCenterCrosshairChange
 }: {
@@ -33,6 +33,7 @@ export function MapController({
     onZoomOut: () => void,
     onFit: () => void,
     onSnapshot: () => void,
+    onExportElements: () => void,
 
     gridInterval: number,
     onGridIntervalChange: (value: number) => void,
@@ -47,6 +48,7 @@ export function MapController({
                 <MapControlButton icon={<MinusIcon size={21} />} onClick={onZoomOut} label="Zoom Out" />
                 <MapControlButton icon={<MaximizeIcon size={21} />} onClick={onFit} label="Fit" />
                 <MapControlButton icon={<ImageDownIcon size={21} />} onClick={onSnapshot} label="Save Current Map" />
+                <MapControlButton icon={<CombineIcon size={21} />} onClick={onExportElements} label="Export Elements" />
             </div>
             <div className="bg-border border border-border flex flex-col gap-[1px] rounded-md overflow-hidden mt-2">
                 <Popover>
