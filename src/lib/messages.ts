@@ -126,6 +126,7 @@ export const DisseminationMessageSchema = z.object({
     id: z.number(),
     time: z.coerce.date(),
     sub: SubscriptionSchema,
+    pub: PublicationSchema
 });
 
 export type DisseminationMessage = z.infer<typeof DisseminationMessageSchema>;
